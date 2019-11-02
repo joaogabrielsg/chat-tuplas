@@ -3,13 +3,13 @@ package Models;
 import java.util.*;
 import net.jini.core.entry.Entry;
 public class UserList implements Entry  {
-    public List<String> usersName;
+    public List<String> users;
     public UserList() {}
 
     public String getUserName(){
-        if (usersName == null || usersName.size() == 0){
+        if (users == null || users.size() == 0){
             return "user1";
         }
-        return String.format("user%s", usersName.size() + 1);
+        return String.format("user%s", users.size() + 1);
     }
 }

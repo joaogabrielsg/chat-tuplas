@@ -3,92 +3,60 @@ import net.jini.core.transaction.TransactionException;
 import net.jini.space.JavaSpace;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
-import Models.*;
+import Controllers.*;
 import Service.*;
 
 public class Client {
-    public JavaSpace space;
-    public String clientName;
+    private JavaSpace space;
+    private String clientName;
 
     public Client(){
         initSpace();
-        registerUser();
     }
 
-    public void initSpace(){
+    private void initSpace(){
         Lookup finder = new Lookup(JavaSpace.class);
         space = (JavaSpace) finder.getService();
+        clientName = UserController.registerUser(space);
     }
 
-    public void getUsersList(){
+    private void printMenu(){
+        System.out.println("--------------Menu--------------");
+        System.out.print("------Client: ");
+        System.out.print(clientName);
+        System.out.println("------------");
+        System.out.println("1 - Enviar Mensagem");
+        System.out.println("2 - Ler Mensagens");
+        System.out.println("3 - Imprimir lista de usuários");
+        System.out.println("4 - Criar ambiente");
+    }
 
-        UserList userList = new UserList();
-        try {
-            UserList usersList = (UserList) space.read(userList, null, 60 * 1000);
-            System.out.println(usersList.usersName.size());
-            usersList.usersName.forEach(user -> {
-                System.out.println(user);
-            });
-        } catch (UnusableEntryException e) {
-            e.printStackTrace();
-        } catch (TransactionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (RemoteException e) {
-            e.printStackTrace();
+    private void menuOptions(String option){
+        Scanner scanner = new Scanner(System.in);
+        switch (option){
+            case "1":
+                System.out.println("Message: ");
+                String message = scanner.nextLine();
+                MessageController.sendMessage(message, space);
+                break;
+
+            case "2":
+                try {
+                    System.out.println(MessageController.readMessage(space).content);
+                } catch (TransactionException | UnusableEntryException | RemoteException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            case "3":
+                UserListController.getUsersList(space);
+
+            case "4":
+                String newEnvironment = EnvironmentController.registerEnvironment(space);
+                System.out.print("Novo ambiente criado: ");
+                System.out.println(newEnvironment);
         }
-    }
-
-    public void registerUser(){
-        UserList userList = new UserList();
-        try {
-            UserList usersList = (UserList) space.readIfExists(userList, null, 60 * 1000);
-            if (usersList == null){
-                userList.usersName = new ArrayList<>();
-                clientName = "user1";
-                userList.usersName.add(clientName);
-                space.write(userList, null, 60 * 1000);
-            } else {
-                usersList = (UserList) space.take(userList, null, 60 * 1000);
-                clientName = usersList.getUserName();
-                usersList.usersName.add(clientName);
-                space.write(usersList, null, 60*1000);
-            }
-            User user = new User();
-            user.name = clientName;
-            space.write(user, null, 60 * 1000);
-        } catch (UnusableEntryException e) {
-            e.printStackTrace();
-        } catch (TransactionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void sendMessage(String message){
-        Message msg = new Message();
-        msg.content = message;
-        try {
-            space.write(msg, null, 60 * 1000);
-        } catch (TransactionException e) {
-            e.printStackTrace();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public Message readMessage() throws TransactionException, UnusableEntryException, RemoteException, InterruptedException {
-        Message template = new Message();
-        return (Message) space.take(template, null, 60 * 1000);
-
     }
 
     public static void main(String[] args) {
@@ -96,34 +64,9 @@ public class Client {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
-            System.out.println("--------------Menu--------------");
-            System.out.print("------Client: ");
-            System.out.print(client.clientName);
-            System.out.println("------------");
-            System.out.println("1 - Write Message");
-            System.out.println("2 - Read Message");
+            client.printMenu();
             String option = scanner.nextLine();
-            if (option.equals("1")) {
-                System.out.println("Message: ");
-                String message = scanner.nextLine();
-                client.sendMessage(message);
-            }
-            if (option.equals("2")) {
-                try {
-                    System.out.println(client.readMessage().content);
-                } catch (TransactionException e) {
-                    e.printStackTrace();
-                } catch (UnusableEntryException e) {
-                    e.printStackTrace();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (option.equals("3")) {
-                client.getUsersList();
-            }
+            client.menuOptions(option);
         }
     }
 }
