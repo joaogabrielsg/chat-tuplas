@@ -31,6 +31,8 @@ public class Client {
         System.out.println("2 - Ler Mensagens");
         System.out.println("3 - Imprimir lista de usuários");
         System.out.println("4 - Criar ambiente");
+        System.out.println("5 - Entrar em um ambiente");
+        System.out.println("6 - Listar usuários de um ambiente");
     }
 
     private void menuOptions(String option){
@@ -48,14 +50,34 @@ public class Client {
                 } catch (TransactionException | UnusableEntryException | RemoteException | InterruptedException e) {
                     e.printStackTrace();
                 }
+                break;
 
             case "3":
                 UserListController.getUsersList(space);
+                break;
 
             case "4":
                 String newEnvironment = EnvironmentController.registerEnvironment(space);
                 System.out.print("Novo ambiente criado: ");
                 System.out.println(newEnvironment);
+                break;
+
+            case "5":
+                System.out.println("---- Ambientes disponiveis ----");
+                EnvironmentListController.getEnvironmentList(space);
+                System.out.println("-------------------------------");
+                System.out.println("Ambiente: ");
+                String environmentName = scanner.nextLine();
+                EnvironmentController.addUser(space, clientName, environmentName);
+                break;
+
+            case "6":
+                System.out.println("---- Ambientes disponiveis ----");
+                EnvironmentListController.getEnvironmentList(space);
+                System.out.println("-------------------------------");
+                System.out.println("Ambiente: ");
+                environmentName = scanner.nextLine();
+                EnvironmentController.getEnvironmentUsers(space, environmentName);
         }
     }
 
