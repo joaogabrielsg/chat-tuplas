@@ -44,17 +44,17 @@ public class Client {
         Scanner scanner = new Scanner(System.in);
         switch (option){
             case "1":
-                System.out.println("Message: ");
+                System.out.print("Usuário para enviar a mensagem: ");
+                String clientNameTo = scanner.nextLine();
+                System.out.print("Message: ");
                 String message = scanner.nextLine();
-                MessageController.sendMessage(message, space);
+                MessageController.sendMessage(message, space, clientName, clientNameTo);
                 break;
 
             case "2":
-                try {
-                    System.out.println(MessageController.readMessage(space).content);
-                } catch (TransactionException | UnusableEntryException | RemoteException | InterruptedException e) {
-                    e.printStackTrace();
-                }
+                System.out.print("Usuário para ler mensagem: ");
+                String clientNameFrom = scanner.nextLine();
+                MessageController.readMessage(space, clientName, clientNameFrom);
                 break;
 
             case "3":
