@@ -1,6 +1,7 @@
 package Controllers;
 
 import Models.Environment;
+import Models.User;
 import Models.EnvironmentList;
 import net.jini.core.entry.UnusableEntryException;
 import net.jini.core.transaction.TransactionException;
@@ -44,6 +45,7 @@ public class EnvironmentController {
             }
             environment.users.add(userName);
             space.write(environment, null, 60 * 1000);
+            UserController.addEnvironment(space, userName, environmentName);
             System.out.print("Usuário ");
             System.out.print(userName);
             System.out.print(" adicionado ao ambiente ");
@@ -53,13 +55,22 @@ public class EnvironmentController {
         }
     }
 
-    public static void removeUser(JavaSpace space, String userName, String environmentName){
+    public static void editUser(JavaSpace space, String userName, String environmentName){
         Environment environment = new Environment();
-        environment.name = environmentName;
+        User user = new User();
         try {
+            user = (User) space.read(user, null, JavaSpace.NO_WAIT);
+            environment.name = user.environment;
             environment = (Environment) space.take(environment, null, 60);
-            environment.users.remove(userName);
+            if (environment.users != null) {
+                environment.users.remove(userName);
+                if (environment.users.size() == 0) {
+                    environment.users = null;
+                }
+            }
             space.write(environment, null, 60);
+            EnvironmentController.addUser(space, userName, environmentName);
+            UserController.editEnvironment(space, userName, environmentName);
         } catch (UnusableEntryException | TransactionException | InterruptedException | RemoteException e) {
             e.printStackTrace();
         }

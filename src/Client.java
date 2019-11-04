@@ -24,15 +24,18 @@ public class Client {
 
     private void printMenu(){
         System.out.println("--------------Menu--------------");
-        System.out.print("------Client: ");
+        System.out.print("-------Client: ");
         System.out.print(clientName);
-        System.out.println("------------");
+        System.out.println("-------------");
         System.out.println("1 - Enviar Mensagem");
         System.out.println("2 - Ler Mensagens");
         System.out.println("3 - Imprimir lista de usuários");
         System.out.println("4 - Criar ambiente");
         System.out.println("5 - Entrar em um ambiente");
-        System.out.println("6 - Listar usuários de um ambiente");
+        System.out.println("6 - Trocar de ambiente");
+        System.out.println("7 - Listar usuários de um ambiente");
+        System.out.println("8 - Criar dispositivo");
+        System.out.println("9 - Imprimir lista de dispositivos");
     }
 
     private void menuOptions(String option){
@@ -64,7 +67,7 @@ public class Client {
 
             case "5":
                 System.out.println("---- Ambientes disponiveis ----");
-                EnvironmentListController.getEnvironmentList(space);
+                EnvironmentListController.getEnvironmentList(space, clientName);
                 System.out.println("-------------------------------");
                 System.out.println("Ambiente: ");
                 String environmentName = scanner.nextLine();
@@ -73,11 +76,31 @@ public class Client {
 
             case "6":
                 System.out.println("---- Ambientes disponiveis ----");
-                EnvironmentListController.getEnvironmentList(space);
+                EnvironmentListController.getEnvironmentList(space, clientName);
+                System.out.println("-------------------------------");
+                System.out.println("Novo Ambiente: ");
+                environmentName = scanner.nextLine();
+                EnvironmentController.editUser(space, clientName, environmentName);
+                break;
+
+            case "7":
+                System.out.println("---- Ambientes disponiveis ----");
+                EnvironmentListController.getEnvironmentList(space, null);
                 System.out.println("-------------------------------");
                 System.out.println("Ambiente: ");
                 environmentName = scanner.nextLine();
                 EnvironmentController.getEnvironmentUsers(space, environmentName);
+                break;
+
+            case "8":
+                String newDevice = DeviceController.registerDevice(space);
+                System.out.print("Novo dispositivo criado: ");
+                System.out.println(newDevice);
+                break;
+
+            case "9":
+                DeviceListController.getDeviceList(space);
+                break;
         }
     }
 

@@ -33,4 +33,30 @@ public class UserController {
         }
         return clientName;
     }
+
+    static void addEnvironment(JavaSpace space, String userName, String environmentName) {
+        User user = new User();
+        user.name = userName;
+
+        try {
+            user = (User) space.take(user, null, JavaSpace.NO_WAIT);
+            user.environment = environmentName;
+            space.write(user, null, 60 * 1000);
+        } catch (UnusableEntryException | TransactionException | InterruptedException | RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    static void editEnvironment(JavaSpace space, String userName, String environmentName) {
+        User user = new User();
+        user.name = userName;
+
+        try {
+            user = (User) space.take(user, null, JavaSpace.NO_WAIT);
+            user.environment = environmentName;
+            space.write(user, null, 60 * 1000);
+        } catch (UnusableEntryException | TransactionException | InterruptedException | RemoteException e) {
+            e.printStackTrace();
+        }
+    }
 }
