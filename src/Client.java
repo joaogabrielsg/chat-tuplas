@@ -36,6 +36,8 @@ public class Client {
         System.out.println("7 - Listar usuários de um ambiente");
         System.out.println("8 - Criar dispositivo");
         System.out.println("9 - Imprimir lista de dispositivos");
+        System.out.println("10 - Adicionar dispositivo a um ambiente");
+        System.out.println("11 - Listar dispositivos de um ambiente");
     }
 
     private void menuOptions(String option){
@@ -100,6 +102,29 @@ public class Client {
 
             case "9":
                 DeviceListController.getDeviceList(space);
+                break;
+
+            case "10":
+                System.out.println("---- Dispositivos ----");
+                DeviceListController.getDeviceList(space);
+                System.out.println("-------------------------------");
+                System.out.println("Dispositivo: ");
+                String deviceName = scanner.nextLine();
+                System.out.println("---- Ambientes disponiveis ----");
+                EnvironmentListController.getEnvironmentList(space, null);
+                System.out.println("-------------------------------");
+                System.out.println("Ambiente: ");
+                environmentName = scanner.nextLine();
+                EnvironmentController.addDevice(space, deviceName, environmentName);
+                break;
+
+            case "11":
+                System.out.println("---- Ambientes disponiveis ----");
+                EnvironmentListController.getEnvironmentList(space, null);
+                System.out.println("-------------------------------");
+                System.out.println("Ambiente: ");
+                environmentName = scanner.nextLine();
+                EnvironmentController.getEnvironmentDevice(space, environmentName);
                 break;
         }
     }

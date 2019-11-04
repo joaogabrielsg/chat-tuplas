@@ -1,7 +1,5 @@
 package Controllers;
 
-import Models.EnvironmentList;
-import Models.User;
 import Models.DeviceList;
 import net.jini.core.entry.UnusableEntryException;
 import net.jini.core.transaction.TransactionException;
@@ -14,9 +12,11 @@ public class DeviceListController {
         DeviceList deviceList = new DeviceList();
         try {
             deviceList = (DeviceList) space.read(deviceList, null, 60 * 1000);
+            System.out.println("================");
             deviceList.devices.forEach(device -> {
                 System.out.println(device);
             });
+            System.out.println("================");
         } catch (UnusableEntryException | RemoteException | InterruptedException | TransactionException e) {
             e.printStackTrace();
         }

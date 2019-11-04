@@ -55,7 +55,7 @@ public class EnvironmentController {
         }
     }
 
-    public static void editUser(JavaSpace space, String userName, String environmentName){
+    public static void removeUser(JavaSpace space, String userName){
         Environment environment = new Environment();
         User user = new User();
         try {
@@ -69,8 +69,32 @@ public class EnvironmentController {
                 }
             }
             space.write(environment, null, 60);
-            EnvironmentController.addUser(space, userName, environmentName);
-            UserController.editEnvironment(space, userName, environmentName);
+        } catch (UnusableEntryException | TransactionException | InterruptedException | RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void editUser(JavaSpace space, String userName, String environmentName){
+        EnvironmentController.removeUser(space, userName);
+        EnvironmentController.addUser(space, userName, environmentName);
+        UserController.editEnvironment(space, userName, environmentName);
+    }
+
+    public static void addDevice(JavaSpace space, String deviceName, String environmentName){
+        Environment environment = new Environment();
+        environment.name = environmentName;
+        try {
+            environment = (Environment) space.take(environment, null, JavaSpace.NO_WAIT);
+            if (environment.devices == null) {
+                environment.devices = new ArrayList<>();
+            }
+            environment.devices.add(deviceName);
+            space.write(environment, null, 60 * 1000);
+            DeviceController.addEnvironment(space, deviceName, environmentName);
+            System.out.print("Dispositivo ");
+            System.out.print(deviceName);
+            System.out.print(" adicionado ao ambiente ");
+            System.out.println(environmentName);
         } catch (UnusableEntryException | TransactionException | InterruptedException | RemoteException e) {
             e.printStackTrace();
         }
@@ -89,6 +113,26 @@ public class EnvironmentController {
             } else {
                 environment.users.forEach(user -> {
                     System.out.println(user);
+                });
+            }
+        } catch (UnusableEntryException | TransactionException | InterruptedException | RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void getEnvironmentDevice(JavaSpace space, String environmentName){
+        Environment environment = new Environment();
+        environment.name = environmentName;
+        try {
+            environment = (Environment) space.read(environment, null, JavaSpace.NO_WAIT);
+            System.out.print("=====");
+            System.out.print(environment.name);
+            System.out.println("=====");
+            if (environment.devices == null) {
+                System.out.println("Não tem nenhum dispositivo nesse ambiente");
+            } else {
+                environment.devices.forEach(device -> {
+                    System.out.println(device);
                 });
             }
         } catch (UnusableEntryException | TransactionException | InterruptedException | RemoteException e) {
